@@ -1,19 +1,10 @@
-import os
-import time
-from werkzeug.utils import secure_filename
-from flask import send_from_directory
 
 import sqlite3
 from flask import Flask, request, jsonify, render_template, g, session, redirect, url_for
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(
-    __name__,
-    template_folder='.',
-    static_folder='.',
-    static_url_path=''
-)
+app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
 DATABASE = 'chat.db'
 
@@ -66,6 +57,7 @@ def init_db():
         )
     ''')
     db.commit()
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
@@ -476,78 +468,6 @@ def post_message(other):
     cur.execute('INSERT INTO messages (from_user, to_user, msg) VALUES (?, ?, ?)', (me, other, msg))
     db.commit()
     return jsonify({"status": "ok"}), 201
-def get_sidebar_data():
-    me = session['username']
-    # все другие пользователи
-    cur = get_db().cursor()
-    cur.execute('SELECT username FROM users WHERE username != ?', (me,))
-    others = [r[0] for r in cur.fetchall()]
-    # группы, в которых я участник
-    cur.execute('''
-      SELECT g.id, g.name
-      FROM groups g
-      JOIN group_members m ON g.id = m.group_id
-      WHERE m.username = ?
-    ''', (me,))
-    groups = cur.fetchall()
-    return others, groups
-
-@app.route('/')
-@login_required
-def index():
-    me = session['username']
-    others, groups = get_sidebar_data()
-    return render_template('index.html',
-                           username=me,
-                           others=others,
-                           groups=groups)
-
-@app.route('/chat/<other>')
-@login_required
-def chat(other):
-    me = session['username']
-    if other == me:
-        return redirect(url_for('index'))
-    # проверим, что такой пользователь есть
-    cur = get_db().cursor()
-    cur.execute('SELECT 1 FROM users WHERE username = ?', (other,))
-    if not cur.fetchone():
-        return redirect(url_for('index'))
-
-    # sidebar
-    others, groups = get_sidebar_data()
-    return render_template('chat.html',
-                           username=me,
-                           other=other,
-                           others=others,
-                           groups=groups)
-
-@app.route('/group/<int:group_id>')
-@login_required
-def group_chat(group_id):
-    me = session['username']
-    db = get_db(); cur = db.cursor()
-    # проверка доступа
-    cur.execute('SELECT 1 FROM group_members WHERE group_id=? AND username=?',
-                (group_id, me))
-    if not cur.fetchone():
-        return redirect(url_for('index'))
-    # детали группы
-    cur.execute('SELECT name FROM groups WHERE id=?', (group_id,))
-    name = cur.fetchone()[0]
-    cur.execute('SELECT username FROM group_members WHERE group_id=?',
-                (group_id,))
-    members = [r[0] for r in cur.fetchall()]
-
-    # sidebar
-    others, groups = get_sidebar_data()
-    return render_template('group.html',
-                           username=me,
-                           group_id=group_id,
-                           group_name=name,
-                           members=members,
-                           others=others,
-                           groups=groups)
 
 if __name__ == '__main__':
     with app.app_context():

@@ -1,31 +1,46 @@
-{% extends "base.html" %}
-{% block title %}Выбор чата{% endblock %}
-
-{% block sidebar %}
-<li><strong>Приватные чаты</strong></li>
-{% for user in others %}
-<li onclick="location.href='{{ url_for('chat', other=user) }}'">
-    <img src="https://ui-avatars.com/api/?name={{ user }}&background=6200EE&color=FFF&size=32" class="avatar">
-    {{ user }}
-</li>
-{% endfor %}
-<li><strong>Группы</strong></li>
-{% for id, name in groups %}
-<li onclick="location.href='{{ url_for('group_chat', group_id=id) }}'">
-    <img src="https://ui-avatars.com/api/?name={{ name }}&background=D1C4E9&color=333&size=32" class="avatar">
-    {{ name }}
-</li>
-{% endfor %}
-{% endblock %}
-
-{% block content %}
-<div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:var(--bg-sidebar); border-bottom:1px solid #DDD;">
-    <h1>Привет, {{ username }}!</h1>
-    <a href="{{ url_for('create_group') }}" style="background:var(--accent); color:#fff; padding:0.5rem 1rem; border-radius:6px; text-decoration:none;">
-        Создать группу
-    </a>
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Выбор чата</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        a { text-decoration: none; color: #00f; margin-right: 1em; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 0.5em 0; }
+        .section { margin-top: 2em; }
+        .section h2 { margin-bottom: 0.5em; }
+    </style>
+</head>
+<body>
+<h1>Привет, {{ username }}!</h1>
+<div>
+    <a href="{{ url_for('logout') }}">Выйти</a>
+    <a href="{{ url_for('create_group') }}">Создать группу</a>
 </div>
-<div style="padding:2rem; color:var(--text-secondary);">
-    Выберите чат слева, чтобы начать переписку.
+
+<div class="section">
+    <h2>Приватные чаты</h2>
+    <ul>
+        {% for user in others %}
+        <li><a href="{{ url_for('chat', other=user) }}">{{ user }}</a></li>
+        {% endfor %}
+        {% if not others %}
+        <li>Нет доступных пользователей для чата</li>
+        {% endif %}
+    </ul>
 </div>
-{% endblock %}
+
+<div class="section">
+    <h2>Группы</h2>
+    <ul>
+        {% for id, name in groups %}
+        <li><a href="{{ url_for('group_chat', group_id=id) }}">{{ name }}</a></li>
+        {% endfor %}
+        {% if not groups %}
+        <li>Вы пока не состоите ни в одной группе</li>
+        {% endif %}
+    </ul>
+</div>
+</body>
+</html>

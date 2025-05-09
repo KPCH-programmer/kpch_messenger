@@ -1,25 +1,17 @@
 <!doctype html>
 <html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Чат{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+<head><meta charset="utf-8"><title>{% block title %}Чат{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
 <body>
 <header>
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+    <img src="{{ url_for('static','images/logo.png') }}" alt="Logo" class="logo">
     <nav>
         <a href="{{ url_for('index') }}">Главная</a>
-        {% if session.username %}
-        <a href="{{ url_for('logout') }}">Выйти ({{ session.username }})</a>
-        {% endif %}
+        {% if session.username %}<a href="{{ url_for('logout') }}">Выйти ({{ session.username }})</a>{% endif %}
     </nav>
 </header>
-<aside>
-    <ul>{% block sidebar %}{% endblock %}</ul>
-</aside>
 <main>{% block content %}{% endblock %}</main>
+<footer>{% block footer %}{% endblock %}</footer>
 {% block scripts %}{% endblock %}
 </body>
 </html>
