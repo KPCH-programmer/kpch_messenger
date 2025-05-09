@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Чат с {{ other }}{% endblock %}
+
+{% block content %}
+<div class="chat-header" style="display:flex; align-items:center; gap:1rem; padding:1rem; border-bottom:1px solid #DDD;">
+    <a href="{{ url_for('index') }}" style="font-size:1.2rem; text-decoration:none; color:var(--text-primary);">← Назад</a>
+    <h1 style="margin:0;">Чат с {{ other }}</h1>
+</div>
+
+<div id="chat" class="chat-window"></div>
+
+<form id="form" class="chat-form" style="display:flex; padding:1rem; border-top:1px solid #DDD;">
+    <input id="input" autocomplete="off" placeholder="Введите сообщение…" style="flex:1; padding:0.5rem; border:1px solid #CCC; border-radius:4px;">
+    <button style="margin-left:0.5rem; padding:0.5rem 1rem;">Отправить</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const chatEl = document.getElementById('chat');
+    let autoScroll = true;
+
+    chatEl.addEventListener('scroll', () => {
+      autoScroll = (chatEl.scrollTop + chatEl.clientHeight >= chatEl.scrollHeight - 10);
+    });
+
+    async function fetchMessages() {
+      const doScroll = autoScroll;
+      const res = await fetch(`/messages/{{ other }}`);
+      const msgs = await res.json();
+      chatEl.innerHTML = msgs.map(m =>
+        `<div class="message ${m.username === "{{ username }}" ? 'own' : ''}">
+           <strong>${m.username}:</strong> ${m.msg}
+         </div>`
+      ).join('');
+      if (doScroll) chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    document.getElementById('form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const txt = document.getElementById('input').value.trim();
+      if (!txt) return;
+      await fetch(`/message/{{ other }}`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({msg: txt})
+      });
+      document.getElementById('input').value = '';
+      fetchMessages();
+    });
+
+    setInterval(fetchMessages, 2000);
+    fetchMessages();
+</script>
+{% endblock %}

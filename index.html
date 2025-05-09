@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Выбор чата{% endblock %}
+
+{% block sidebar %}
+<li><strong>Приватные чаты</strong></li>
+{% for user in others %}
+<li onclick="location.href='{{ url_for('chat', other=user) }}'">
+    <img src="https://ui-avatars.com/api/?name={{ user }}&background=6200EE&color=FFF&size=32" class="avatar">
+    {{ user }}
+</li>
+{% endfor %}
+<li><strong>Группы</strong></li>
+{% for id, name in groups %}
+<li onclick="location.href='{{ url_for('group_chat', group_id=id) }}'">
+    <img src="https://ui-avatars.com/api/?name={{ name }}&background=D1C4E9&color=333&size=32" class="avatar">
+    {{ name }}
+</li>
+{% endfor %}
+{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:var(--bg-sidebar); border-bottom:1px solid #DDD;">
+    <h1>Привет, {{ username }}!</h1>
+    <a href="{{ url_for('create_group') }}" style="background:var(--accent); color:#fff; padding:0.5rem 1rem; border-radius:6px; text-decoration:none;">
+        Создать группу
+    </a>
+</div>
+<div style="padding:2rem; color:var(--text-secondary);">
+    Выберите чат слева, чтобы начать переписку.
+</div>
+{% endblock %}

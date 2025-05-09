@@ -1,0 +1,120 @@
+:root {
+  --bg-light: #F5F7FA;
+  --bg-sidebar: #FFFFFF;
+  --accent: #6200EE;
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  --msg-own-bg: #EDE7F6;
+  --msg-other-bg: #D1C4E9;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-light);
+  color: var(--text-primary);
+  display: grid;
+  grid-template-rows: 60px 1fr;
+  grid-template-columns: 250px 1fr;
+  height: 100vh;
+}
+.layout {
+  display: flex;
+  height: calc(100vh - 60px); /* header = 60px */
+}
+.sidebar {
+  width: 240px;
+  background: var(--bg-sidebar);
+  padding: 1rem;
+  overflow-y: auto;
+}
+.content {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+header {
+  grid-column: 1 / -1;
+  background: var(--bg-sidebar);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+header .logo {
+  height: 40px;
+}
+header nav {
+  margin-left: auto;
+}
+header nav a {
+  margin-left: 1rem;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+aside {
+  background: var(--bg-sidebar);
+  border-right: 1px solid #DDD;
+  overflow-y: auto;
+}
+aside ul { list-style: none; margin: 0; padding: 0.5rem; }
+aside li {
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+aside li:hover { background: #EEE; }
+aside li img.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#chat { flex: 1; padding: 1rem; overflow-y: auto; }
+
+.message {
+  max-width: 70%;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  line-height: 1.4;
+}
+.message.own { background: var(--msg-own-bg); margin-left: auto; }
+.message.other { background: var(--msg-other-bg); }
+
+#form {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #DDD;
+  display: flex;
+  align-items: center;
+  background: var(--bg-sidebar);
+}
+#input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #CCC;
+  border-radius: 6px;
+  margin-right: 0.5rem;
+}
+button {
+  background: var(--accent);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+button:hover { background: #4500B5; }
